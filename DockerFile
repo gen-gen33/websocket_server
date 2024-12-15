@@ -1,0 +1,21 @@
+# ベースイメージとして軽量なAlpine Linuxを使用
+FROM golang:1.18-alpine
+
+# 作業ディレクトリを設定
+WORKDIR /app
+
+# Go Modulesの利用を前提として、依存関係をコピー
+COPY go.mod go.sum ./
+RUN go mod download
+
+# アプリケーションのソースコードをコピー
+COPY . .
+
+# ビルドコマンドの実行
+RUN go build -o server .
+
+# Cloud Runはデフォルトでポート8080を使用するため、環境変数を設定
+ENV PORT=8080
+
+# コンテナ起動時に実行されるコマンドを指定
+CMD ["./server"]
